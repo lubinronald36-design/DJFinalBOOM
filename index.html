@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Ronald DJ – FULL MIX SYSTEM</title>
+
+<style>
+body {
+  background: #000;
+  color: #0f0;
+  font-family: Arial;
+  padding: 20px;
+}
+h1, h2 {
+  text-shadow: 0px 0px 8px #0f0;
+}
+button {
+  padding: 10px 20px;
+  margin: 6px;
+  font-size: 18px;
+  border-radius: 10px;
+  background: #111;
+  color: #0f0;
+  border: 1px solid #0f0;
+}
+button:hover {
+  background: #0f0;
+  color: #000;
+}
+
+/* SCRUB STYLE FROM FIRST PLAYER */
+.progress {
+  width: 90%;
+  height: 12px;
+  background: #222;
+  border: 1px solid #0f0;
+  margin: 10px 0;
+  position: relative;
+  cursor: pointer;
+}
+.marker {
+  width: 10px;
+  height: 12px;
+  background: red;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* SLIDER STYLE FROM SECOND PLAYER */
+.progress-container {
+  position: relative;
+  width: 100%;
+  margin: 15px 0;
+}
+.progress-bar {
+  width: 100%;
+}
+.cue-marker {
+  position: absolute;
+  top: -5px;
+  width: 4px;
+  height: 20px;
+  background: yellow;
+  display: none;
+}
+
+section {
+  border: 2px solid #0f0;
+  padding: 20px;
+  margin-top: 35px;
+  border-radius: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎧 Ronald DJ – FULL MIX ENGINE 🎧</h1>
+
+========================  
+### 🔥 PLAYER SYSTEM #1  
+========================
+
+<section>
+
+<audio id="girlA" src="girl.mp3"></audio>
+<audio id="girlB" src="girl.mp3"></audio>
+
+<h2>Track A (System 1)</h2>
+<button onclick="playTrack('girlA')">▶ Play A</button>
+<button onclick="pauseTrack('girlA')">⏸ Pause A</button>
+<button onclick="setCue('girlA')">🎯 Set Cue A</button>
+<button onclick="jumpCue('girlA')">⏩ Jump Cue A</button>
+
+<div class="progress" id="barA" onclick="scrub(event, 'girlA', 'barA')">
+  <div class="marker" id="markerA"></div>
+</div>
+
+<h2>Track B (System 1)</h2>
+<button onclick="playTrack('girlB')">▶ Play B</button>
+<button onclick="pauseTrack('girlB')">⏸ Pause B</button>
+<button onclick="setCue('girlB')">🎯 Set Cue B</button>
+<button onclick="jumpCue('girlB')">⏩ Jump Cue B</button>
+
+<div class="progress" id="barB" onclick="scrub(event, 'girlB', 'barB')">
+  <div class="marker" id="markerB"></div>
+</div>
+
+</section>
+
+========================  
+### 🎚 PLAYER SYSTEM #2  
+========================
+
+<section>
+
+<h2>Track A (System 2)</h2>
+<button class="button" onclick="audioA.play()">▶ Play A</button>
+<button class="button" onclick="audioA.pause()">⏸ Pause A</button>
+<button class="button" onclick="setCueA()">🎯 Set Cue A</button>
+<button class="button" onclick="jumpCueA()">⏩ Jump Cue A</button>
+
+<div class="progress-container">
+  <input id="progressA" type="range" class="progress-bar" min="0" max="100" value="0">
+  <div id="cueMarkerA" class="cue-marker"></div>
+</div>
+
+<h2>Track B (System 2)</h2>
+<button class="button" onclick="audioB.play()">▶ Play B</button>
+<button class="button" onclick="audioB.pause()">⏸ Pause B</button>
+<button class="button" onclick="setCueB()">🎯 Set Cue B</button>
+<button class="button" onclick="jumpCueB()">⏩ Jump Cue B</button>
+
+<div class="progress-container">
+  <input id="progressB" type="range" class="progress-bar" min="0" max="100" value="0">
+  <div id="cueMarkerB" class="cue-marker"></div>
+</div>
+
+</section>
+
+<script>
+// SYSTEM #1
+let cueA1 = 0, cueB1 = 0;
+
+function playTrack(id){document.getElementById(id).play();}
+function pauseTrack(id){document.getElementById(id).pause();}
+
+function setCue(id){
+  const audio=document.getElementById(id);
+  if(id==="girlA") cueA1=audio.currentTime;
+  if(id==="girlB") cueB1=audio.currentTime;
+}
+function jumpCue(id){
+  const audio=document.getElementById(id);
+  if(id==="girlA") audio.currentTime = cueA1;
+  if(id==="girlB") audio.currentTime = cueB1;
+  audio.play();
+}
+
+function scrub(event, audioId, barId){
+  const bar=document.getElementById(barId);
+  const audio=document.getElementById(audioId);
+  const rect=bar.getBoundingClientRect();
+  const x=event.clientX - rect.left;
+  const pct=x / rect.width;
+  audio.currentTime=pct * audio.duration;
+}
+
+setInterval(()=>{
+  updateMarker("girlA","markerA","barA");
+  updateMarker("girlB","markerB","barB");
+},40);
+
+function updateMarker(audioId, markerId, barId){
+  const audio=document.getElementById(audioId);
+  const marker=document.getElementById(markerId);
+  const bar=document.getElementById(barId);
+
+  if(audio.duration>0){
+    const pct=audio.currentTime / audio.duration;
+    marker.style.left = (pct * bar.clientWidth) + "px";
+  }
+}
+
+// SYSTEM #2
+let audioA=new Audio("girl.mp3");
+let audioB=new Audio("girl.mp3");
+
+let progressA=document.getElementById("progressA");
+let progressB=document.getElementById("progressB");
+
+let cueA=0, cueB=0;
+
+let cueMarkerA=document.getElementById("cueMarkerA");
+let cueMarkerB=document.getElementById("cueMarkerB");
+
+audioA.addEventListener("timeupdate",()=>{progressA.value=(audioA.currentTime/audioA.duration)*100;});
+audioB.addEventListener("timeupdate",()=>{progressB.value=(audioB.currentTime/audioB.duration)*100;});
+
+progressA.addEventListener("input",()=>{audioA.currentTime=(progressA.value/100)*audioA.duration;});
+progressB.addEventListener("input",()=>{audioB.currentTime=(progressB.value/100)*audioB.duration;});
+
+function setCueA(){
+  cueA=audioA.currentTime;
+  cueMarkerA.style.left=(cueA/audioA.duration)*100+"%";
+  cueMarkerA.style.display="block";
+}
+function jumpCueA(){audioA.currentTime=cueA;}
+
+function setCueB(){
+  cueB=audioB.currentTime;
+  cueMarkerB.style.left=(cueB/audioB.duration)*100+"%";
+  cueMarkerB.style.display="block";
+}
+function jumpCueB(){audioB.currentTime=cueB;}
+</script>
+
+</body>
+</html>
